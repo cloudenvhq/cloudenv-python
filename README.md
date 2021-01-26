@@ -7,8 +7,11 @@ $ pip install cloudenv
 ## How to Use
 
 ```
+import os
 import cloudenv
-my_var = cloudenv.get("AWS_SECRET_ACCESS_KEY")
+
+cloudenv.load_cloudenv()
+os.getenv("AWS_SECRET_ACCESS_KEY")
 ```
 
 ## Learn More
