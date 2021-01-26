@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="cloudenv", # Replace with your own username
-    version="0.1.0",
+    version="0.1.1",
     author="Lucas Carlson",
     author_email="lucas@carlson.net",
     description="Keep Your Environmental Variables Secure And In Sync",
