@@ -57,13 +57,13 @@ class Cloudenv():
         return dotenv_values(stream=filelike)
 
     def bearer(self):
-        return open(self.bearer_file, 'r').read().strip()
+        return os.getenv('CLOUDENV_BEARER_TOKEN') or open(self.bearer_file, 'r').read().strip()
 
     def secret_key(self):
-        return open(self.secret_key_file, 'r').read().split('\n')[1]
+        return open(self.secret_key_file, 'r').read().split('\n')[1].split()[1]
 
     def app_name(self):
-        return open(self.secret_key_file, 'r').read().split('\n')[0]
+        return open(self.secret_key_file, 'r').read().split('\n')[0].split()[1]
 
     def set_as_environment_variables(self):
         """
@@ -186,14 +186,14 @@ def load_cloudenv(cloudenv_bearer=None, cloudenv_secret_key=None, override=False
     - *override*: where to override the system environment variables with the variables in `.env` file.
                   Defaults to `False`.
     """
-    bearer_file = cloudenv_bearer or find_cloudenv_bearer()
+    bearer_file = cloudenv_bearer or os.getenv('CLOUDENV_BEARER_TOKEN') or find_cloudenv_bearer()
     secret_key_file = cloudenv_secret_key or find_cloudenv_secret_key()
     cloudenv = Cloudenv(bearer_file, secret_key_file, override=override)
     return cloudenv.set_as_environment_variables()
 
 
 def cloudenv_values(cloudenv_bearer=None, cloudenv_secret_key=None):
-    bearer = cloudenv_bearer or find_cloudenv_bearer()
+    bearer_file = cloudenv_bearer or os.getenv('CLOUDENV_BEARER_TOKEN') or find_cloudenv_bearer()
     secret_key = cloudenv_secret_key or find_cloudenv_secret_key()
     cloudenv = Cloudenv(bearer_file, secret_key_file, override=True)
     return cloudenv.dict()
