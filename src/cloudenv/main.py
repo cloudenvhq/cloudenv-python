@@ -43,7 +43,7 @@ class Cloudenv():
             return self._dict
 
         if 'PYTHON_ENV' in os.environ.keys():
-            self._dict = self.parse(os.environ['PYTHON_ENV'])
+            self._dict = self.parse(os.getenv('PYTHON_ENV'))
             self._dict.update(self.parse('default'))
         else:
             self._dict = self.parse('default')
@@ -51,10 +51,16 @@ class Cloudenv():
         return self._dict
 
     def parse(self, environment):
-        stdout = subprocess.getoutput('curl -s -H "Authorization: Bearer {0}" "{1}{2}?name={3}&environment={4}&version={5}&lang=python" | openssl enc -a -aes-256-cbc -md sha512 -d -pass pass:"{6}" 2> /dev/null'.format(self.bearer(), self.api_host, self.read_path, self.app_name(), environment, __version__, self.secret_key()))
-        filelike = StringIO(stdout)
-        filelike.seek(0)
-        return dotenv_values(stream=filelike)
+        try:
+            if self.is_valid_cloudenv_app():
+                stdout = subprocess.getoutput('curl -s -H "Authorization: Bearer {0}" "{1}{2}?name={3}&environment={4}&version={5}&lang=python" | openssl enc -a -aes-256-cbc -md sha512 -d -pass pass:"{6}" 2> /dev/null'.format(self.bearer(), self.api_host, self.read_path, self.app_name(), environment, __version__, self.secret_key()))
+                filelike = StringIO(stdout)
+                filelike.seek(0)
+                return dotenv_values(stream=filelike)
+            else:
+                return {}
+        except UnicodeDecodeError:
+            return {}
 
     def bearer(self):
         return os.getenv('CLOUDENV_BEARER_TOKEN') or open(self.bearer_file, 'r').read().strip()
@@ -64,6 +70,9 @@ class Cloudenv():
 
     def app_name(self):
         return open(self.secret_key_file, 'r').read().split('\n')[0].split()[1]
+
+    def is_valid_cloudenv_app():
+        return os.path.exists(self.secret_key_file)
 
     def set_as_environment_variables(self):
         """
