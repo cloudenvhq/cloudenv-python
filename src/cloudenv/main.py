@@ -42,7 +42,7 @@ class Cloudenv():
         if self._dict:
             return self._dict
 
-        if 'PYTHON_ENV' in dict.keys():
+        if 'PYTHON_ENV' in os.environ.keys():
             self._dict = self.parse(os.environ['PYTHON_ENV'])
             self._dict.update(self.parse('default'))
         else:
