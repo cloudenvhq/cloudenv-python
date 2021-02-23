@@ -71,7 +71,7 @@ class Cloudenv():
     def app_name(self):
         return open(self.secret_key_file, 'r').read().split('\n')[0].split()[1]
 
-    def is_valid_cloudenv_app():
+    def is_valid_cloudenv_app(self):
         return os.path.exists(self.secret_key_file)
 
     def set_as_environment_variables(self):
