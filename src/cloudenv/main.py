@@ -66,10 +66,10 @@ class Cloudenv():
         return os.getenv('CLOUDENV_BEARER_TOKEN') or open(self.bearer_file, 'r').read().strip()
 
     def secret_key(self):
-        return open(self.secret_key_file, 'r').read().split('\n')[1].split()[1]
+        return os.getenv('CLOUDENV_APP_SECRET_KEY') or open(self.secret_key_file, 'r').read().split('\n')[1].split()[1]
 
     def app_name(self):
-        return open(self.secret_key_file, 'r').read().split('\n')[0].split()[1]
+        return os.getenv('CLOUDENV_APP_SLUG') or open(self.secret_key_file, 'r').read().split('\n')[0].split()[1]
 
     def is_valid_cloudenv_app(self):
         return os.path.exists(self.secret_key_file)
